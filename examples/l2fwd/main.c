@@ -183,15 +183,21 @@ l2fwd_simple_forward(struct rte_mbuf *m, unsigned portid)
 	int sent;
 	struct rte_eth_dev_tx_buffer *buffer;
 
+	printf("l2fwd_simple_forward: 1\n");
+
 	dst_port = l2fwd_dst_ports[portid];
 
+    printf("l2fwd_simple_forward: 2\n");
 	if (mac_updating)
 		l2fwd_mac_updating(m, dst_port);
 
+    printf("l2fwd_simple_forward: 3\n");
 	buffer = tx_buffer[dst_port];
 	sent = rte_eth_tx_buffer(dst_port, 0, buffer, m);
 	if (sent)
 		port_statistics[dst_port].tx += sent;
+
+    printf("l2fwd_simple_forward: 4, end\n");
 }
 
 /* main processing loop */
@@ -209,27 +215,33 @@ l2fwd_main_loop(void)
 			BURST_TX_DRAIN_US;
 	struct rte_eth_dev_tx_buffer *buffer;
 
+	printf("l2fwd_main_loop: 1\n");
+
 	prev_tsc = 0;
 	timer_tsc = 0;
 
 	lcore_id = rte_lcore_id();
 	qconf = &lcore_queue_conf[lcore_id];
 
+    printf("l2fwd_main_loop: 2\n");
 	if (qconf->n_rx_port == 0) {
 		RTE_LOG(INFO, L2FWD, "lcore %u has nothing to do\n", lcore_id);
 		return;
 	}
 
 	RTE_LOG(INFO, L2FWD, "entering main loop on lcore %u\n", lcore_id);
-
+    
+	printf("l2fwd_main_loop: 3\n");
 	for (i = 0; i < qconf->n_rx_port; i++) {
 
-		portid = qconf->rx_port_list[i];
+	    printf("l2fwd_main_loop: 4\n");
+	  	portid = qconf->rx_port_list[i];
 		RTE_LOG(INFO, L2FWD, " -- lcoreid=%u portid=%u\n", lcore_id,
 			portid);
 
 	}
 
+    printf("l2fwd_main_loop: 5\n");
 	while (!force_quit) {
 
 		cur_tsc = rte_rdtsc();
@@ -290,6 +302,8 @@ l2fwd_main_loop(void)
 			}
 		}
 	}
+
+	printf("l2fwd_main_loop: 6, end\n");
 }
 
 static int
