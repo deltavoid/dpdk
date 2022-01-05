@@ -659,14 +659,18 @@ main(int argc, char **argv)
 	unsigned int nb_lcores = 0;
 	unsigned int nb_mbufs;
 
-	printf("main: 1\n");
 
 	/* init EAL */
+	printf("main: 1\n");
 	ret = rte_eal_init(argc, argv);
 	if (ret < 0)
 		rte_exit(EXIT_FAILURE, "Invalid EAL arguments\n");
 	argc -= ret;
 	argv += ret;
+
+
+
+
 
     printf("main: 2\n");
 	force_quit = false;
@@ -680,6 +684,10 @@ main(int argc, char **argv)
 		rte_exit(EXIT_FAILURE, "Invalid L2FWD arguments\n");
 
 	printf("MAC updating %s\n", mac_updating ? "enabled" : "disabled");
+
+
+
+
 
 	/* convert to number of cycles */
 	printf("main: 4\n");
@@ -702,6 +710,10 @@ main(int argc, char **argv)
 	if (l2fwd_enabled_port_mask & ~((1 << nb_ports) - 1))
 		rte_exit(EXIT_FAILURE, "Invalid portmask; possible (0x%x)\n",
 			(1 << nb_ports) - 1);
+
+
+
+
 
 	/* reset l2fwd_dst_ports */
 	printf("main: 8\n");
@@ -748,6 +760,15 @@ main(int argc, char **argv)
 		}
 	}
 
+	for (int i = 0; i < RTE_MAX_ETHPORTS; i++)
+	{   printf("%d ", l2fwd_dst_ports[i]);
+	}
+	printf("\n");
+
+
+
+
+
     printf("main: 17\n");
 	rx_lcore_id = 0;
 	qconf = NULL;
@@ -786,6 +807,10 @@ main(int argc, char **argv)
 		       portid, l2fwd_dst_ports[portid]);
 	}
 
+
+
+
+
     printf("main: 25\n");
 	nb_mbufs = RTE_MAX(nb_ports * (nb_rxd + nb_txd + MAX_PKT_BURST +
 		nb_lcores * MEMPOOL_CACHE_SIZE), 8192U);
@@ -798,6 +823,9 @@ main(int argc, char **argv)
 	printf("main: 27\n");
 	if (l2fwd_pktmbuf_pool == NULL)
 		rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
+
+
+
 
 	/* Initialise each port */
 	printf("main: 28\n");
@@ -945,16 +973,24 @@ main(int argc, char **argv)
     printf("main: 47\n");
 	check_all_ports_link_status(l2fwd_enabled_port_mask);
 
+
+
 	ret = 0;
 	/* launch per-lcore init on every lcore */
 	printf("main: 48\n");
 	rte_eal_mp_remote_launch(l2fwd_launch_one_lcore, NULL, CALL_MAIN);
+
+	printf("main: 48.1\n");
 	RTE_LCORE_FOREACH_WORKER(lcore_id) {
 		if (rte_eal_wait_lcore(lcore_id) < 0) {
 			ret = -1;
 			break;
 		}
 	}
+
+
+
+
 
     printf("main: 49\n");
 	RTE_ETH_FOREACH_DEV(portid) {
@@ -971,6 +1007,6 @@ main(int argc, char **argv)
 	}
 	printf("Bye...\n");
 
-    printf("main: 51\n");
+    printf("main: 51, end\n");
 	return ret;
 }
