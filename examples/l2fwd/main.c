@@ -123,11 +123,11 @@ print_stats(void)
 	total_packets_tx = 0;
 	total_packets_rx = 0;
 
-	const char clr[] = { 27, '[', '2', 'J', '\0' };
-	const char topLeft[] = { 27, '[', '1', ';', '1', 'H','\0' };
+	// const char clr[] = { 27, '[', '2', 'J', '\0' };
+	// const char topLeft[] = { 27, '[', '1', ';', '1', 'H','\0' };
 
 		/* Clear screen and move to top left */
-	printf("%s%s", clr, topLeft);
+	// printf("%s%s", clr, topLeft);
 
 	printf("\nPort statistics ====================================");
 
@@ -157,7 +157,7 @@ print_stats(void)
 		   total_packets_dropped);
 	printf("\n====================================================\n");
 
-	fflush(stdout);
+	// fflush(stdout);
 }
 
 static void
@@ -585,7 +585,7 @@ check_all_ports_link_status(uint32_t port_mask)
 	char link_status_text[RTE_ETH_LINK_MAX_STR_LEN];
 
 	printf("\nChecking link status");
-	fflush(stdout);
+	// fflush(stdout);
 	for (count = 0; count <= MAX_CHECK_TIME; count++) {
 		if (force_quit)
 			return;
@@ -624,7 +624,7 @@ check_all_ports_link_status(uint32_t port_mask)
 
 		if (all_ports_up == 0) {
 			printf(".");
-			fflush(stdout);
+			// fflush(stdout);
 			rte_delay_ms(CHECK_INTERVAL);
 		}
 
@@ -818,7 +818,7 @@ main(int argc, char **argv)
 		/* init port */
 		printf("main: 30\n");
 		printf("Initializing port %u... ", portid);
-		fflush(stdout);
+		// fflush(stdout);
 
         printf("main: 31\n");
 		ret = rte_eth_dev_info_get(portid, &dev_info);
@@ -855,7 +855,7 @@ main(int argc, char **argv)
 
 		/* init one RX queue */
 		printf("main: 36\n");
-		fflush(stdout);
+		// fflush(stdout);
 		rxq_conf = dev_info.default_rxconf;
 		rxq_conf.offloads = local_port_conf.rxmode.offloads;
 		ret = rte_eth_rx_queue_setup(portid, 0, nb_rxd,
@@ -868,7 +868,7 @@ main(int argc, char **argv)
 
 		/* init one TX queue on each port */
 		printf("main: 37\n");
-		fflush(stdout);
+		// fflush(stdout);
 		txq_conf = dev_info.default_txconf;
 		txq_conf.offloads = local_port_conf.txmode.offloads;
 		ret = rte_eth_tx_queue_setup(portid, 0, nb_txd,
