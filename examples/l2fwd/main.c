@@ -223,7 +223,7 @@ l2fwd_main_loop(void)
 	lcore_id = rte_lcore_id();
 	qconf = &lcore_queue_conf[lcore_id];
 
-    printf("l2fwd_main_loop: 2\n");
+    printf("l2fwd_main_loop: 2, lcore_id: %d\n", lcore_id);
 	if (qconf->n_rx_port == 0) {
 		RTE_LOG(INFO, L2FWD, "lcore %u has nothing to do\n", lcore_id);
 		return;
@@ -252,6 +252,7 @@ l2fwd_main_loop(void)
 		diff_tsc = cur_tsc - prev_tsc;
 		if (unlikely(diff_tsc > drain_tsc)) {
 
+            printf("l2fwd_main_loop: 5.1\n");
 			for (i = 0; i < qconf->n_rx_port; i++) {
 
 				portid = l2fwd_dst_ports[qconf->rx_port_list[i]];
@@ -272,8 +273,12 @@ l2fwd_main_loop(void)
 				/* if timer has reached its timeout */
 				if (unlikely(timer_tsc >= timer_period)) {
 
+					printf("l2fwd_main_loop: 5.2\n");
+
 					/* do this only on main core */
 					if (lcore_id == rte_get_main_lcore()) {
+
+						printf("l2fwd_main_loop: 5.3\n");
 						print_stats();
 						/* reset the timer */
 						timer_tsc = 0;
@@ -293,12 +298,21 @@ l2fwd_main_loop(void)
 			nb_rx = rte_eth_rx_burst(portid, 0,
 						 pkts_burst, MAX_PKT_BURST);
 
+			if  (nb_rx)
+			{
+				printf("l2fwd_main_loop: 5.4, lcore: %d, get nb_rx: %d\n", lcore_id, nb_rx);
+			}
+
 			port_statistics[portid].rx += nb_rx;
 
 			for (j = 0; j < nb_rx; j++) {
+
 				m = pkts_burst[j];
+				
 				rte_prefetch0(rte_pktmbuf_mtod(m, void *));
+				
 				l2fwd_simple_forward(m, portid);
+			
 			}
 		}
 	}
@@ -309,7 +323,10 @@ l2fwd_main_loop(void)
 static int
 l2fwd_launch_one_lcore(__rte_unused void *dummy)
 {
+	printf("l2fwd_launch_one_lcore: 1\n");
 	l2fwd_main_loop();
+
+	printf("l2fwd_launch_one_lcore: 2, end\n");
 	return 0;
 }
 
@@ -695,6 +712,7 @@ main(int argc, char **argv)
 
     printf("main: 5\n");
 	nb_ports = rte_eth_dev_count_avail();
+	printf("main: 5.1, nb_ports: %d\n", nb_ports);
 	if (nb_ports == 0)
 		rte_exit(EXIT_FAILURE, "No Ethernet ports - bye\n");
 
@@ -881,6 +899,10 @@ main(int argc, char **argv)
 				 "Cannot get MAC address: err=%d, port=%u\n",
 				 ret, portid);
 
+
+
+
+
 		/* init one RX queue */
 		printf("main: 36\n");
 		// fflush(stdout);
@@ -894,6 +916,8 @@ main(int argc, char **argv)
 			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup:err=%d, port=%u\n",
 				  ret, portid);
 
+
+
 		/* init one TX queue on each port */
 		printf("main: 37\n");
 		// fflush(stdout);
@@ -905,6 +929,10 @@ main(int argc, char **argv)
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "rte_eth_tx_queue_setup:err=%d, port=%u\n",
 				ret, portid);
+
+
+
+		
 
 		/* Initialize TX buffers */
 		printf("main: 38\n");
@@ -927,6 +955,10 @@ main(int argc, char **argv)
 			"Cannot set error callback for tx buffer on port %u\n",
 				 portid);
 
+
+
+
+
         printf("main: 41\n");
 		ret = rte_eth_dev_set_ptypes(portid, RTE_PTYPE_UNKNOWN, NULL,
 					     0);
@@ -941,6 +973,10 @@ main(int argc, char **argv)
 				  ret, portid);
 
 		printf("done: \n");
+
+
+
+
 
         printf("main: 43\n");
 		ret = rte_eth_promiscuous_enable(portid);
@@ -972,6 +1008,8 @@ main(int argc, char **argv)
 
     printf("main: 47\n");
 	check_all_ports_link_status(l2fwd_enabled_port_mask);
+
+
 
 
 
