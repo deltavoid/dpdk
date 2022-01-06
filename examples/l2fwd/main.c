@@ -162,9 +162,9 @@ print_stats(void)
 
 static void
 l2fwd_mac_updating(struct rte_mbuf *m, unsigned dest_portid)
-{
-	struct rte_ether_hdr *eth;
+{	struct rte_ether_hdr *eth;
 	void *tmp;
+
 
 	eth = rte_pktmbuf_mtod(m, struct rte_ether_hdr *);
 
@@ -876,6 +876,9 @@ main(int argc, char **argv)
 		printf("Initializing port %u... ", portid);
 		// fflush(stdout);
 
+
+
+
         printf("main: 31\n");
 		ret = rte_eth_dev_info_get(portid, &dev_info);
 		if (ret != 0)
@@ -887,11 +890,15 @@ main(int argc, char **argv)
 		if (dev_info.tx_offload_capa & DEV_TX_OFFLOAD_MBUF_FAST_FREE)
 			local_port_conf.txmode.offloads |=
 				DEV_TX_OFFLOAD_MBUF_FAST_FREE;
+
 		printf("main: 33\n");
 		ret = rte_eth_dev_configure(portid, 1, 1, &local_port_conf);
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "Cannot configure device: err=%d, port=%u\n",
 				  ret, portid);
+
+
+
 
         printf("main: 34\n");
 		ret = rte_eth_dev_adjust_nb_rx_tx_desc(portid, &nb_rxd,
@@ -900,6 +907,7 @@ main(int argc, char **argv)
 			rte_exit(EXIT_FAILURE,
 				 "Cannot adjust number of descriptors: err=%d, port=%u\n",
 				 ret, portid);
+
 
         printf("main: 35\n");
 		ret = rte_eth_macaddr_get(portid,
@@ -975,6 +983,7 @@ main(int argc, char **argv)
 		if (ret < 0)
 			printf("Port %u, Failed to disable Ptype parsing\n",
 					portid);
+
 		/* Start device */
 		printf("main: 42\n");
 		ret = rte_eth_dev_start(portid);
@@ -1045,15 +1054,20 @@ main(int argc, char **argv)
 		printf("main: 50\n");
 		if ((l2fwd_enabled_port_mask & (1 << portid)) == 0)
 			continue;
+
 		printf("Closing port %d...", portid);
+
 		ret = rte_eth_dev_stop(portid);
 		if (ret != 0)
 			printf("rte_eth_dev_stop: err=%d, port=%d\n",
 			       ret, portid);
+
 		rte_eth_dev_close(portid);
+
 		printf(" Done\n");
 	}
 	printf("Bye...\n");
+
 
     printf("main: 51, end\n");
 	return ret;
