@@ -252,15 +252,21 @@ l2fwd_main_loop(void)
 		diff_tsc = cur_tsc - prev_tsc;
 		if (unlikely(diff_tsc > drain_tsc)) {
 
-            printf("l2fwd_main_loop: 5.1\n");
+            // printf("l2fwd_main_loop: 5.1\n");
 			for (i = 0; i < qconf->n_rx_port; i++) {
 
 				portid = l2fwd_dst_ports[qconf->rx_port_list[i]];
 				buffer = tx_buffer[portid];
 
 				sent = rte_eth_tx_buffer_flush(portid, 0, buffer);
-				if (sent)
+				if (sent) {
+
+					printf("l2fwd_main_loop: 5.2, send packets, lcore_id: %d, port_id: %d, packet num: %d\n",
+					        lcore_id, portid, sent);
+
 					port_statistics[portid].tx += sent;
+
+				}
 
 			}
 
@@ -273,7 +279,8 @@ l2fwd_main_loop(void)
 				/* if timer has reached its timeout */
 				if (unlikely(timer_tsc >= timer_period)) {
 
-					printf("l2fwd_main_loop: 5.2\n");
+					printf("l2fwd_main_loop: 5.2, lcore_id: %d, main_lcore: %d\n",
+					        lcore_id, rte_get_main_lcore());
 
 					/* do this only on main core */
 					if (lcore_id == rte_get_main_lcore()) {
@@ -300,7 +307,8 @@ l2fwd_main_loop(void)
 
 			if  (nb_rx)
 			{
-				printf("l2fwd_main_loop: 5.4, lcore: %d, get nb_rx: %d\n", lcore_id, nb_rx);
+				printf("l2fwd_main_loop: 5.4, get packets, lcore_id: %d, port_id: %d, packet num: %d\n", 
+				        lcore_id, portid, nb_rx);
 			}
 
 			port_statistics[portid].rx += nb_rx;
