@@ -184,16 +184,17 @@ l2fwd_simple_forward(struct rte_mbuf *m, unsigned portid)
 	struct rte_eth_dev_tx_buffer *buffer;
 
 	printf("l2fwd_simple_forward: 1\n");
-
 	dst_port = l2fwd_dst_ports[portid];
 
     printf("l2fwd_simple_forward: 2\n");
 	if (mac_updating)
 		l2fwd_mac_updating(m, dst_port);
 
+
     printf("l2fwd_simple_forward: 3\n");
 	buffer = tx_buffer[dst_port];
 	sent = rte_eth_tx_buffer(dst_port, 0, buffer, m);
+	printf("l2fwd_simple_forward: 4, rte_eth_tx_buffer, ret: %d\n", sent);
 	if (sent)
 		port_statistics[dst_port].tx += sent;
 
@@ -259,9 +260,10 @@ l2fwd_main_loop(void)
 				buffer = tx_buffer[portid];
 
 				sent = rte_eth_tx_buffer_flush(portid, 0, buffer);
+
 				if (sent) {
 
-					printf("l2fwd_main_loop: 5.2, send packets, lcore_id: %d, port_id: %d, packet num: %d\n",
+					printf("l2fwd_main_loop: 5.2, send packets, lcore_id: %d, port_id: %d, tx num: %d\n",
 					        lcore_id, portid, sent);
 
 					port_statistics[portid].tx += sent;
@@ -307,7 +309,7 @@ l2fwd_main_loop(void)
 
 			if  (nb_rx)
 			{
-				printf("l2fwd_main_loop: 5.4, get packets, lcore_id: %d, port_id: %d, packet num: %d\n", 
+				printf("l2fwd_main_loop: 5.4, get packets, lcore_id: %d, port_id: %d, rx num: %d\n", 
 				        lcore_id, portid, nb_rx);
 			}
 
